@@ -18,7 +18,7 @@ before do
   @storage = DatabasePersistence.new(logger)
 end
 
-# View the Homepage which is a list of categories
+# View the Homepage which is a list of workouts, with their names and dates in chronological order
 get "/" do
   
 end
