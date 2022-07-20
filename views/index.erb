@@ -1,0 +1,9 @@
+<ul id = "list_of_workouts">
+  <% @workouts_arr.each do |workout_arr| %>
+    <li>
+      <a href="/workouts/<%= workout_arr[0] %>">Date: <%= workout_arr[2] %> Workout: <%= workout_arr[1] %><a>
+    </li>
+  <% end %>
+</ul>
+
+<a href="/workouts/new">Add New Workout</a>

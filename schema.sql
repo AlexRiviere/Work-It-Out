@@ -19,4 +19,6 @@ CREATE TABLE exercises_workouts (
   rest_time_mins decimal(2, 1)
 );
 
-ALTER TABLE exercises_workouts 
+ALTER TABLE exercises_workouts
+ALTER COLUMN rest_time_mins
+SET DEFAULT 0;

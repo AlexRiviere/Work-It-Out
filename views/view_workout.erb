@@ -1,0 +1,12 @@
+<h3><%= @workout[0].capitalize %> Workout from <%= @workout[1] %></h3>
+
+<ul id = "list_of_exercises">
+  <% @exercises.each do |tuple| %>
+    <li>
+      Name: <%= tuple[0] %> Sets: <%= tuple[1] %> Reps: <%= tuple[2] %> 
+      Rest: Sets: <%= tuple[3] %> minutes
+    </li>
+  <% end %>
+</ul>
+
+<a href="/workouts/new">Add New Workout</a>
