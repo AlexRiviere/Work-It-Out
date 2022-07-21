@@ -15,7 +15,7 @@ CREATE TABLE exercises_workouts (
   exercise_id integer NOT NULL REFERENCES exercises (id) ON DELETE CASCADE,
   sets integer,
   reps_per_set integer,
-  weight_lbs integer,
+  weight_lbs decimal(5, 2),
   rest_time_mins decimal(2, 1)
 );
 

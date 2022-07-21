@@ -43,10 +43,10 @@ end
 post '/workouts/new' do
   workout_name = params[:workout_name]
   workout_date = params[:workout_date]
-  binding.pry
   @storage.add_workout(workout_name, workout_date)
-  # for right now, to see the frutis we will redirect to home but in the future we will redirect to the workout page
-  redirect "/"
+  session[:success] = 'A new workout has been created.'
+
+  redirect "/workouts/#{@storage.find_workout_id(workout_name)}"
 end
 
 # view the workout with all its exercises
@@ -55,4 +55,34 @@ get '/workouts/:workout_id' do
   @exercises = @storage.list_exercises_from_workout(params[:workout_id])
   
   erb :view_workout
+end
+
+# view the page where you can add a new exercise to an existing workout
+
+get '/workouts/:workout_id/exercises/new' do
+  @workout = @storage.find_workout(params[:workout_id]).flatten
+  erb :add_exercise
+end
+
+def sets_reps_validation(input)
+  input.to_i < 0 || input.to_i.to_s != input
+end
+
+# weight in pounds needs to be less than 1000 and have no more than 2 decimals
+def weight_validation(weight)
+  weight.to_i < 1000 && weight.to_i >= 0
+end
+
+# 	- rest should have no more than 1 decimal place
+
+
+# Create a new exercise in the database
+
+post '/workouts/:workout_id/exercises/new' do
+
+  binding.pry  
+  @storage.add_exercise(params[:workout_id], params[:exercise_name], params[:sets], params[:reps_per_set], params[:weight_lbs], params[:rest_time_mins], )
+
+  
+  redirect "/workouts/#{params[:workout_id]}"
 end

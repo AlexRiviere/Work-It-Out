@@ -1,0 +1,22 @@
+<form action="/workouts/<%= params[:workout_id]%>/exercises/new" method="post">
+  
+  <h3>Adding an exercise from the <%= @workout[0].capitalize %> workout you did on <%= @workout[1] %></h3>
+  
+  <label for="exercise_name">Exercise Name: </label>  
+  <input id="exercise_name" name="exercise_name" type="text" required/>
+  
+  <label for="sets">Sets: </label>  
+  <input id="sets" name="sets" type="text" />
+  
+  <label for="reps_per_set">Reps Per Set: </label>  
+  <input id="reps_per_set" name="reps_per_set" type="text" />
+  
+  <label for="weight_lbs">Weight in Pounds: </label>  
+  <input id="weight_lbs" name="weight_lbs" type="text" />
+  
+  <label for="rest_time_mins">Rest in between Sets: </label>  
+  <input id="rest_time_mins" name="rest_time_mins" type="text" />
+  
+  <input type="Submit" value="Create Exercise" />
+
+</form>

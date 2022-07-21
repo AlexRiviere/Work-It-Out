@@ -3,10 +3,11 @@
 <ul id = "list_of_exercises">
   <% @exercises.each do |tuple| %>
     <li>
-      Name: <%= tuple[0] %> Sets: <%= tuple[1] %> Reps: <%= tuple[2] %> 
-      Rest: Sets: <%= tuple[3] %> minutes
+      Name: <%= tuple[0] %> Sets: <%= tuple[1] %> Reps: <%= tuple[2] %>
+      Weight: <%= tuple[3] %> lbs
+      Rest: Sets: <%= tuple[4] %> minutes
     </li>
   <% end %>
 </ul>
 
-<a href="/workouts/new">Add New Workout</a>
+<a href="/workouts/<%= params[:workout_id]%>/exercises/new">Add New Exercise</a>
