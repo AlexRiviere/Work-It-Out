@@ -25,7 +25,7 @@ class DatabasePersistence
   
   def list_exercises_from_workout(workout_id)
     sql = <<~SQL 
-      SELECT exercises.name, ew.sets, ew.reps_per_set, ew.weight_lbs, ew.rest_time_mins FROM exercises_workouts ew 
+      SELECT exercises.name, ew.sets, ew.reps_per_set, ew.weight_lbs, ew.rest_time_mins, ew.id FROM exercises_workouts ew 
       JOIN exercises ON ew.exercise_id = exercises.id
       WHERE workout_id = $1
     SQL
@@ -38,7 +38,8 @@ class DatabasePersistence
     result.values
   end
   
-  def add_exercise(workout_id, name, sets, reps, weight, rest)
+  def add_exercise(workout_id, name, input_array)
+    sets, reps, weight, rest = input_array
     unless exercise_exists?(name)
       add_new_exercise(name)
     end
@@ -54,6 +55,40 @@ class DatabasePersistence
     sql = "SELECT id FROM workouts WHERE name = $1"
     result = query(sql, name)
     result.values.flatten[0]
+  end
+  
+  def find_instance_of_exercise(instance_id)
+    sql = <<~SQL 
+      SELECT exercises.name, ew.sets, ew.reps_per_set, ew.weight_lbs, ew.rest_time_mins FROM exercises_workouts ew
+      JOIN exercises ON exercises.id = ew.exercise_id
+      WHERE ew.id = $1
+    SQL
+    result = query(sql, instance_id)
+    result[0]
+  end
+  
+  def edit_exercise(instance_id, exercise_name, input_array)
+    sets, reps, weight, rest = input_array
+    unless exercise_exists?(exercise_name)
+      add_new_exercise(exercise_name)
+    end
+
+    sql = <<~SQL
+      UPDATE exercises_workouts SET exercise_id = $1, sets = $2, 
+      reps_per_set = $3, weight_lbs = $4, rest_time_mins = $5
+      WHERE id = $6
+    SQL
+    query(sql, find_exercise_id(exercise_name), sets, reps, weight, rest, instance_id)
+  end
+  
+  def delete_exercise(instance_id)
+    sql = "DELETE FROM exercises_workouts WHERE id = $1"
+    query(sql, instance_id)
+  end
+  
+  def delete_workout(workout_id)
+    sql = "DELETE FROM workouts WHERE id = $1"
+    query(sql, workout_id)
   end
   
   private 

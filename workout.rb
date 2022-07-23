@@ -17,7 +17,7 @@ configure(:development) do
 end
 
 helpers do 
-
+  def format_exercise
 end
 
 before do   
@@ -65,24 +65,93 @@ get '/workouts/:workout_id/exercises/new' do
 end
 
 def sets_reps_validation(input)
-  input.to_i < 0 || input.to_i.to_s != input
+  (input.to_i > 0 && input.to_i.to_s == input) || input.empty?
 end
 
-# weight in pounds needs to be less than 1000 and have no more than 2 decimals
 def weight_validation(weight)
-  weight.to_i < 1000 && weight.to_i >= 0
+  (weight.to_i < 1000 && weight.to_i >= 0) || weight.empty?
 end
 
-# 	- rest should have no more than 1 decimal place
+def rest_validation(rest)
+  rest.to_i < 10 || rest.empty?
+end
 
+def valid_input?(input_array)
+  sets_reps_validation(input_array[0]) &&
+  sets_reps_validation(input_array[1]) &&
+  weight_validation(input_array[2]) &&
+  rest_validation(input_array[3])
+end
+
+def convert_empty_strings_to_nil(array)
+  array.map do |input|
+    input.empty? ? nil : input
+  end
+end
 
 # Create a new exercise in the database
 
 post '/workouts/:workout_id/exercises/new' do
-
-  binding.pry  
-  @storage.add_exercise(params[:workout_id], params[:exercise_name], params[:sets], params[:reps_per_set], params[:weight_lbs], params[:rest_time_mins], )
-
   
+  @workout = @storage.find_workout(params[:workout_id]).flatten
+  input_array = [params[:sets], params[:reps_per_set], params[:weight_lbs], params[:rest_time_mins]]
+    
+  if valid_input?(input_array)
+    @storage.add_exercise(params[:workout_id], params[:exercise_name], convert_empty_strings_to_nil(input_array))
+    session[:success] = "Exercise added."
+    redirect "/workouts/#{params[:workout_id]}"
+  else 
+    session[:error] = <<-ERROR
+      Sets/Reps must be a positive integers.
+      Weight must be positive and less than 1000lbs.
+      Rest must be less than 10 minutes. 
+    ERROR
+    erb :add_exercise
+  end
+
+end
+
+# view the page where you can edit an exercise that already exists
+
+get '/workouts/:workout_id/edit_exercise/:instance_id' do
+  @workout = @storage.find_workout(params[:workout_id]).flatten
+  @instance = @storage.find_instance_of_exercise(params[:instance_id])
+  erb :edit_exercise
+end
+
+
+# Edit the exercise
+
+post '/workouts/:workout_id/edit_exercise/:instance_id' do
+  @workout = @storage.find_workout(params[:workout_id]).flatten
+  @instance = @storage.find_instance_of_exercise(params[:instance_id])
+  input_array = [params[:sets], params[:reps_per_set], params[:weight_lbs], params[:rest_time_mins]]
+  if valid_input?(input_array)
+    @storage.edit_exercise(params[:instance_id], params[:exercise_name], convert_empty_strings_to_nil(input_array))
+    session[:success] = "Exercise added."
+    redirect "/workouts/#{params[:workout_id]}"
+  else
+    session[:error] = <<-ERROR
+      Sets/Reps must be a positive integers.
+      Weight must be positive and less than 1000lbs.
+      Rest must be less than 10 minutes. 
+    ERROR
+    erb :edit_exercise
+  end
+end
+
+# Delete an Exercise
+
+post '/workouts/:workout_id/delete_exercise/:instance_id' do
+  @storage.delete_exercise(params[:instance_id])
+  session[:success] = 'The exercise has been deleted.'
   redirect "/workouts/#{params[:workout_id]}"
+end
+
+# Delete a Workout
+
+post '/workouts/delete_workout/:workout_id' do
+  @storage.delete_workout(params[:workout_id])
+  session[:success] = 'The workout has been deleted.'
+  redirect '/'
 end

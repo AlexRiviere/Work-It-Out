@@ -7,7 +7,14 @@
       Weight: <%= tuple[3] %> lbs
       Rest: Sets: <%= tuple[4] %> minutes
     </li>
+    <a href="/workouts/<%= params[:workout_id] %>/edit_exercise/<%= tuple[5] %>">Edit Exercise</a>
+    <form action="/workouts/<%= params[:workout_id] %>/delete_exercise/<%= tuple[5] %>" method="post">
+      <button type="submit">Delete</button>
+    </form>
   <% end %>
 </ul>
 
 <a href="/workouts/<%= params[:workout_id]%>/exercises/new">Add New Exercise</a>
+<form action="/workouts/delete_workout/<%= params[:workout_id] %>" method="post">
+  <button type="submit">Delete Whole Workout</button>
+</form>

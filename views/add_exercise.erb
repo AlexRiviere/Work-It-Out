@@ -3,19 +3,19 @@
   <h3>Adding an exercise from the <%= @workout[0].capitalize %> workout you did on <%= @workout[1] %></h3>
   
   <label for="exercise_name">Exercise Name: </label>  
-  <input id="exercise_name" name="exercise_name" type="text" required/>
+  <input id="exercise_name" name="exercise_name" type="text" value="<%= params[:exercise_name] || "" %>" required />
   
   <label for="sets">Sets: </label>  
-  <input id="sets" name="sets" type="text" />
+  <input id="sets" name="sets" type="text" value="<%= params[:sets] || ""  %>" />
   
   <label for="reps_per_set">Reps Per Set: </label>  
-  <input id="reps_per_set" name="reps_per_set" type="text" />
+  <input id="reps_per_set" name="reps_per_set" type="text" value="<%= params[:reps_per_set] || ""  %>" />
   
   <label for="weight_lbs">Weight in Pounds: </label>  
-  <input id="weight_lbs" name="weight_lbs" type="text" />
+  <input id="weight_lbs" name="weight_lbs" type="text" value="<%= params[:weight_lbs] || ""  %>" />
   
   <label for="rest_time_mins">Rest in between Sets: </label>  
-  <input id="rest_time_mins" name="rest_time_mins" type="text" />
+  <input id="rest_time_mins" name="rest_time_mins" type="text" value="<%= params[:rest_time_mins] || ""  %>" />
   
   <input type="Submit" value="Create Exercise" />
 
