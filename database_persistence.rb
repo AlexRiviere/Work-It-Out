@@ -29,7 +29,7 @@ class DatabasePersistence
       JOIN exercises ON ew.exercise_id = exercises.id
       WHERE workout_id = $1
     SQL
-    query(sql, workout_id).values
+    query(sql, workout_id)
   end
   
   def find_workout(id)

@@ -2,13 +2,24 @@
 
 <ul id = "list_of_exercises">
   <% @exercises.each do |tuple| %>
+
     <li>
-      Name: <%= tuple[0] %> Sets: <%= tuple[1] %> Reps: <%= tuple[2] %>
-      Weight: <%= tuple[3] %> lbs
-      Rest: Sets: <%= tuple[4] %> minutes
+      Name: <%= tuple["name"] %> 
+      <% unless all_exercise_info_nil?(tuple) %>
+
+        <ul>
+
+          <% get_all_non_nil_exercise_info(tuple).each do |col_name, value|%>
+            <% label_info = get_label_info(col_name) %>
+            <li><%= label_info[0] %>: <%= value %> <%= label_info[1] %></li>
+          <% end %>
+
+        </ul>
+      <% end %>
     </li>
-    <a href="/workouts/<%= params[:workout_id] %>/edit_exercise/<%= tuple[5] %>">Edit Exercise</a>
-    <form action="/workouts/<%= params[:workout_id] %>/delete_exercise/<%= tuple[5] %>" method="post">
+
+    <a href="/workouts/<%= params[:workout_id] %>/edit_exercise/<%= tuple["id"] %>">Edit Exercise</a>
+    <form action="/workouts/<%= params[:workout_id] %>/delete_exercise/<%= tuple["id"] %>" method="post">
       <button type="submit">Delete</button>
     </form>
   <% end %>

@@ -17,7 +17,33 @@ configure(:development) do
 end
 
 helpers do 
-  def format_exercise
+  def all_exercise_info_nil?(exercise_row_hash)
+    exercise_info = get_all_exercise_info(exercise_row_hash)
+    exercise_info.keys.all? { |value| value.nil? }
+  end
+  
+  def get_all_exercise_info(exercise_row_hash)
+    exercise_row_hash.select do |col_name, _|
+      col_name != "name" && col_name != "id"
+    end
+  end
+  
+  def get_all_non_nil_exercise_info(exercise_row_hash)
+    get_all_exercise_info(exercise_row_hash).select { |_, value| !value.nil? }
+  end
+  
+  def get_label_info(col_name)
+    case col_name
+    when "sets" then ["Sets"]
+    when "reps_per_set" then ["Reps"] 
+    when "weight_lbs" then ["Weight", "lbs"]
+    when "rest_time_mins" then ["Rest", "minutes"]
+    end
+  end  
+  
+  def get_workout_info(workout_id)
+    @storage.find_workout(workout_id).flatten
+  end
 end
 
 before do   
@@ -34,12 +60,12 @@ get '/workouts' do
   erb :index
 end
 
-# view the form to add a new workout 
+# View the form to add a new workout 
 get '/workouts/new' do
   erb :add_workout
 end
 
-# create a new workout 
+# Create a new workout 
 post '/workouts/new' do
   workout_name = params[:workout_name]
   workout_date = params[:workout_date]
@@ -51,7 +77,7 @@ end
 
 # view the workout with all its exercises
 get '/workouts/:workout_id' do 
-  @workout = @storage.find_workout(params[:workout_id]).flatten
+  @workout = get_workout_info(params[:workout_id])
   @exercises = @storage.list_exercises_from_workout(params[:workout_id])
   
   erb :view_workout
@@ -60,7 +86,7 @@ end
 # view the page where you can add a new exercise to an existing workout
 
 get '/workouts/:workout_id/exercises/new' do
-  @workout = @storage.find_workout(params[:workout_id]).flatten
+  @workout = get_workout_info(params[:workout_id])
   erb :add_exercise
 end
 
@@ -93,7 +119,7 @@ end
 
 post '/workouts/:workout_id/exercises/new' do
   
-  @workout = @storage.find_workout(params[:workout_id]).flatten
+  @workout = get_workout_info(params[:workout_id])
   input_array = [params[:sets], params[:reps_per_set], params[:weight_lbs], params[:rest_time_mins]]
     
   if valid_input?(input_array)
@@ -114,7 +140,7 @@ end
 # view the page where you can edit an exercise that already exists
 
 get '/workouts/:workout_id/edit_exercise/:instance_id' do
-  @workout = @storage.find_workout(params[:workout_id]).flatten
+  @workout = get_workout_info(params[:workout_id])
   @instance = @storage.find_instance_of_exercise(params[:instance_id])
   erb :edit_exercise
 end
@@ -123,7 +149,7 @@ end
 # Edit the exercise
 
 post '/workouts/:workout_id/edit_exercise/:instance_id' do
-  @workout = @storage.find_workout(params[:workout_id]).flatten
+  @workout = get_workout_info(params[:workout_id])
   @instance = @storage.find_instance_of_exercise(params[:instance_id])
   input_array = [params[:sets], params[:reps_per_set], params[:weight_lbs], params[:rest_time_mins]]
   if valid_input?(input_array)

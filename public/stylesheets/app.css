@@ -13,3 +13,12 @@ a:visited {
 .flash.success {
   background-color: green;
   }
+  
+form button {
+  display: block;
+  padding: 10px;
+  }
+  
+li {
+  padding: 10px;
+  }
