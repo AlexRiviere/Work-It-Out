@@ -5,8 +5,7 @@ gem "sinatra-contrib"
 gem "erubis"
 gem "rack-test"
 gem "minitest"
-gem "pry"
 gem "pg"
 
 
-ruby "2.7.0"
+ruby "3.0.0"
