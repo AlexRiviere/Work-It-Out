@@ -2,13 +2,28 @@ require "pg"
 require "pry"
 
 class DatabasePersistence
-  def initialize(logger)
-    @db = PG.connect(dbname: "workouts")
-    @logger = logger
+  def initialize(*logger)
+    @db = if Sinatra::Base.production?
+        PG.connect(ENV['DATABASE_URL'])
+        @logger = logger
+      elsif Sinatra::Base.development?
+        PG.connect(dbname: "workouts")
+        @logger = logger
+      elsif Sinatra::Base.test?
+        PG.connect(dbname: "workouts_test")
+      end
   end
   
   def query(statement, *params)
-    @logger.info "#{statement}: #{params}"
+    if Sinatra::Base.production?
+      PG.connect(ENV['DATABASE_URL'])
+      @logger.info "#{statement}: #{params}"
+    elsif Sinatra::Base.development?
+      PG.connect(dbname: "workouts")
+      @logger.info "#{statement}: #{params}"
+    elsif Sinatra::Base.test?
+      PG.connect(dbname: "workouts_test")
+    end
     @db.exec_params(statement, params)
   end
   
@@ -91,6 +106,12 @@ class DatabasePersistence
     query(sql, workout_id)
   end
   
+  def delete_data_from_all_tables
+    delete_data_from_workouts_table
+    delete_data_from_exercises_table
+    delete_data_from_exercises_workouts_table
+  end
+  
   private 
   
   def exercise_exists?(exercise_name)
@@ -108,5 +129,20 @@ class DatabasePersistence
     sql = "SELECT id FROM exercises WHERE name = $1"
     result = query(sql, exercise_name)
     result.values.flatten[0].to_i
+  end
+  
+  def delete_data_from_workouts_table
+    sql = "DELETE FROM workouts"
+    query(sql)
+  end
+    
+  def delete_data_from_exercises_table
+    sql = "DELETE FROM exercises"
+    query(sql)
+  end  
+    
+  def delete_data_from_exercises_workouts_table
+    sql = "DELETE FROM exercises_workouts"
+    query(sql)
   end
 end

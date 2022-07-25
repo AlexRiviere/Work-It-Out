@@ -6,7 +6,6 @@ gem "erubis"
 gem "rack-test"
 gem "minitest"
 gem "pry"
-gem "cgi"
 gem "pg"
 
 
