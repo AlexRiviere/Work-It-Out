@@ -111,6 +111,10 @@ class DatabasePersistence
     delete_data_from_exercises_workouts_table
   end
   
+  def disconnect
+		@db.close
+  end
+  
   private 
   
   def exercise_exists?(exercise_name)
