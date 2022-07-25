@@ -1,28 +1,19 @@
 require "pg"
 
 class DatabasePersistence
-  def initialize(*logger)
+  def initialize(logger)
     @db = if Sinatra::Base.production?
         PG.connect(ENV['DATABASE_URL'])
-        @logger = logger
       elsif Sinatra::Base.development?
         PG.connect(dbname: "workouts")
-        @logger = logger
-      elsif Sinatra::Base.test?
-        PG.connect(dbname: "workouts_test")
+      # elsif Sinatra::Base.test?
+      #   PG.connect(dbname: "workouts_test")
       end
+    @logger = logger
   end
   
   def query(statement, *params)
-    if Sinatra::Base.production?
-      PG.connect(ENV['DATABASE_URL'])
-      @logger.info "#{statement}: #{params}"
-    elsif Sinatra::Base.development?
-      PG.connect(dbname: "workouts")
-      @logger.info "#{statement}: #{params}"
-    elsif Sinatra::Base.test?
-      PG.connect(dbname: "workouts_test")
-    end
+    @logger.info "#{statement}: #{params}"
     @db.exec_params(statement, params)
   end
   
